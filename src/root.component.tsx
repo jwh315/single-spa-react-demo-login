@@ -18,8 +18,11 @@ const Root = (props: IRootProps) => {
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    if (props.user.username && window.location.pathname !== "/logout") {
+    const path = window.location.pathname;
+    if (props.user.username && path !== "/logout") {
       navigate("/dashboard");
+    } else if (path == "/logout") {
+      props.publish("USER_DATA_EVENT", {});
     }
   }, [props.user]);
 
