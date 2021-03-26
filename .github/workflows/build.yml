@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PROJECT: "login"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    name: bundle code
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 1.18.1
+
+      - name: Run yarn install
+        run: yarn install
+
+      - name: Run yarn build
+        run: yarn build
+
+      - name: Create deployment directory
+        run: mkdir -p dist/${PROJECT}/${GITHUB_SHA}
+
+      - name: move build files
+        run: mv dist/*.* dist/${PROJECT}/${GITHUB_SHA}
+
+      - name: deploy
+        uses: reggionick/s3-deploy@v3
+        with:
+          folder: dist
+          bucket: single-spa-react-demo
+          bucket-region: us-east-1
+
+      - name: install aws cli
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 1.18.1
+
+      - name: set permissions for build
+        run: chmod +x build/after_deploy.sh
+        shell: bash
+
+      - name: version importmap
+        run: build/after_deploy.sh
+        shell: bash
