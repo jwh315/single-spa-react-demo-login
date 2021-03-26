@@ -24,7 +24,7 @@ const Root = (props: IRootProps) => {
     } else if (path == "/logout") {
       props.publish("USER_DATA_EVENT", {});
     }
-  }, [props.user]);
+  }, [props]);
 
   const login = () => {
     setShowError(false);
