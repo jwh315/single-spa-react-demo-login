@@ -22,7 +22,7 @@ const Root = (props: IRootProps) => {
     if (props.user.username && path !== "/logout") {
       navigate("/dashboard");
     } else if (path == "/logout") {
-      props.publish("USER_DATA_EVENT", {});
+      props.eventer.publish("USER_DATA_EVENT", {});
     }
   }, [props]);
 
@@ -37,7 +37,7 @@ const Root = (props: IRootProps) => {
       .pop();
 
     if (user) {
-      props.publish("USER_DATA_EVENT", user);
+      props.eventer.publish("USER_DATA_EVENT", user);
 
       navigate("/dashboard");
     } else {
